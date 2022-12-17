@@ -1,4 +1,5 @@
 #' @title **MLB Stats**
+#' @param person_id player id
 #' @param stat_type Stat type to return statistics for.
 #' @param sit_codes Situation codes
 #' @param player_pool There are 4 different types of player pools to return statistics for a particular player pool across a sport. 
@@ -112,6 +113,7 @@
 #'   try(mlb_stats(stat_type = 'season', stat_group = 'hitting', season = 2021))
 #' }
 mlb_stats_splits <- function(
+                      person_id = NULL,                    
                       stat_type = NULL,
                       sit_codes = NULL,
                       stat_group = NULL,
@@ -126,6 +128,7 @@ mlb_stats_splits <- function(
   sport_ids <- paste(sport_ids, collapse = ',')
   mlb_endpoint <- mlb_stats_endpoint("v1/people")
   query_params <- list(
+    personIds=person_id,
     type = stat_type,
     sitCodes = sit_codes,
     group = stat_group,
