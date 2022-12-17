@@ -110,11 +110,13 @@
 #' @examples \donttest{
 #'   try(mlb_stats(stat_type = 'season', stat_group = 'hitting', season = 2021))
 #' }
-mlb_stats_splits <- function(stat_type = NULL,
-                      player_pool=NULL,
-                      game_type = NULL,
-                      team_id = NULL,
-                      position = NULL,
+mlb_stats_splits <- function(#stat_type = NULL,
+                      #player_pool=NULL,
+                      #game_type = NULL,
+                      #team_id = NULL,
+                      #position = NULL,
+                      stat_type = NULL,
+                      sit_codes = NULL,
                       stat_group = NULL,
                       season = NULL,
                       league_id = NULL,
@@ -125,17 +127,19 @@ mlb_stats_splits <- function(stat_type = NULL,
                       offset = NULL){
   
   sport_ids <- paste(sport_ids, collapse = ',')
-  mlb_endpoint <- mlb_stats_endpoint("v1/stats")
+  mlb_endpoint <- mlb_stats_endpoint("v1/people")
   query_params <- list(
-    stats = stat_type,
-    playerPool = player_pool,
-    gameType = game_type,
-    teamId = team_id,
-    position = position,
+    #stats = stat_type,
+    #playerPool = player_pool,
+    #gameType = game_type,
+    #teamId = team_id,
+    #position = position,
+    type = stat_type,
+    sitCodes = sit_codes,
     group = stat_group,
     season = season,
-    leagueId = league_id,
-    sportIds = sport_ids,
+    #leagueId = league_id,
+    #sportIds = sport_ids,
     sortStat = sort_stat,
     order = order,
     limit = limit,
