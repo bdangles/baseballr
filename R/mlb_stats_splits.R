@@ -127,33 +127,43 @@ mlb_stats_splits <- function(
   
   sport_ids <- paste(sport_ids, collapse = ',')
   mlb_endpoint <- mlb_stats_endpoint("v1/people")
-  query_params <- list(
-    personIds=person_id,
-    type = stat_type,
-    sitCodes = sit_codes,
-    group = stat_group,
-    season = season,
-    sortStat = sort_stat,
-    order = order,
-    limit = limit,
-    offset = offset
-  )
   
-  mlb_endpoint <- httr::modify_url(mlb_endpoint, query = query_params)
+  mlb_endpoint = paste(mlb_endpoint,
+        "?",
+        "personIds=",
+        person_id,
+        "&hydrate=stats(",
+        "type=",stat_type,
+        ",group=",stat_group,
+        ",sitCodes=",sit_codes,
+        ",season=",season,
+        ")",
+        sep="")
+  
+  #query_params <- list(
+  #  type = stat_type,
+  #  sitCodes = sit_codes,
+  #  group = stat_group,
+  #  season = season,
+  #  sortStat = sort_stat,
+  #  order = order,
+  #  limit = limit,
+  #  offset = offset
+ #)
+  
+  #mlb_endpoint <- httr::modify_url(mlb_endpoint, query = query_params)
+
+  print(mlb_endpoint)
+  
   
   tryCatch(
     expr = {
-      resp <- mlb_endpoint %>% 
+      resp <- mlb_endpoint %>%
         mlb_api_call()
-      stats_leaders <- jsonlite::fromJSON(jsonlite::toJSON(resp[['stats']]), flatten = TRUE)  
-      stats_leaders$season <- NULL
-      stats <- stats_leaders %>% 
-        tidyr::unnest("splits") %>% 
-        janitor::clean_names()  %>% 
-        as.data.frame() %>% 
-        dplyr::select(-"exemptions") %>%
-        make_baseballr_data("MLB Stats data from MLB.com",Sys.time())
-      
+      print(resp)
+      people <- jsonlite::fromJSON(jsonlite::toJSON(resp$people), flatten = TRUE) %>%
+        janitor::clean_names() %>%
+        make_baseballr_data("MLB People data from MLB.com",Sys.time())
     },
     error = function(e) {
       message(glue::glue("{Sys.time()}: Invalid arguments provided"))
@@ -161,7 +171,33 @@ mlb_stats_splits <- function(
     finally = {
     }
   )
-  colnames(stats)<-gsub("stat_", "", colnames(stats))
-  return(stats)
+  return(people)
+  
+  #tryCatch(
+   # expr = {
+  #    resp <- mlb_endpoint %>% 
+   #     mlb_api_call()
+   #   print(resp)
+   #   stats_leaders <- jsonlite::fromJSON(jsonlite::toJSON(resp$stats), flatten = TRUE)  
+ #     print(stats_leaders)
+#      stats_leaders$season <- NULL
+#      print(stats_leaders)
+#      stats <- stats_leaders %>% 
+#        tidyr::unnest("splits") %>% 
+#        janitor::clean_names()  %>% 
+#        as.data.frame() %>% 
+#        dplyr::select(-"exemptions") %>%
+#        make_baseballr_data("MLB Stats data from MLB.com",Sys.time())
+#      print(stats)
+#      
+#    },
+#    error = function(e) {
+#      message(glue::glue("{Sys.time()}: Invalid arguments provided"))
+#    },
+#    finally = {
+#    }
+#  )
+#  colnames(stats)<-gsub("stat_", "", colnames(stats))
+#  return(stats)
 }
 

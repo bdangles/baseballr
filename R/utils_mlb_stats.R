@@ -5,7 +5,6 @@ mlb_api_call <- function(url){
   json <- res$content %>%
     rawToChar() %>%
     jsonlite::fromJSON(simplifyVector = T)
-  
   return(json)
 }
 
